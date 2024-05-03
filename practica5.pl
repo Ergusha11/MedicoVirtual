@@ -6,23 +6,11 @@
 count(0).
 
 %Alimentos
-verdura('Berenjena',29).
-verdura('Berros',21).
 verdura('Brócoli',31).
-verdura('Calabacín',31).
 verdura('Calabaza',24).
-verdura('Cebolla',47).
-verdura('Cebolla tierna',39).
 verdura('Champiñón y otras setas',28).
 verdura('Col',28).
-verdura('Col de Bruselas',54).
 verdura('Coliflor',30).
-verdura('Endibia',22).
-verdura('Escarola',37).
-verdura('Espárragos',26).
-verdura('Espárragos en lata',24).
-verdura('Espinaca',32).
-verdura('Espinacas congeladas',25).
 
 fruta('manzana picada',52).
 fruta('plátano picado',89).
@@ -30,7 +18,7 @@ fruta('papaya picada',45).
 fruta('fresa picada',36).
 
 carnes('Lengua de vaca',191).
-carnes('chicharron', 601).
+carnes('chicharron', 501).
 carnes('Ternera',181).
 carnes('Tripas',100).
 carnes('Cordero pierna',98).
@@ -50,7 +38,7 @@ bebida('jugo de fruta',45).
 bebida('Piña colada',194).
 bebida('Té',1).
 
-postre('Bizcocho',456).
+postre('Bizcocho',450).
 postre('Pastel de queso',414).
 
 
@@ -94,20 +82,20 @@ desayuno(LD,TkCal):-fruta(F,Kf),lacteo(L,Kl), cereal(C,Kc),
                         TkCal is Kf+Kl+Kc, LD = [F,L,C].
 
 % El almuerzo consta de fruta+lacteo
-almuerzo(LA,TkCal):-fruta(F,Kf),verdura(V,Kv),bebida(B,Kb), 
+almuerzo(LA,TkCal):-fruta(F,Kf),verdura(V,Kv),lacteo(B,Kb), 
 						TkCal = Kf+Kv+Kb, LA = [F,V,B].
 
 %Regla para armar la comida
-comida(ListCom,TkCal):-carnes(C1,K1), pasta(C2, K2), postre(C3, K3), 
-						TkCal is K1+K2+K3, ListCom = [C1,C2,C3].
+comida(ListCom,TkCal):-carnes(C1,K1), verdura(V, Kv), bebida(C3, K3), 
+						TkCal is K1+Kv+K3, ListCom = [C1,V,C3].
 
 %La merienda consta de lacteo + fruta
 merienda(ListMer,TkCal):-lacteo(L, Kl), fruta(F, Kf), 
 						TkCal is Kl + Kf, ListMer = [L,F].
 
-%La cena consta de lacteo +frutas+ensalada
-cena(ListCena,TkCal):- fruta(F,Kf),lacteo(L,Kl),
-						TkCal is Kf+Kl, ListCena = [F,L].
+%La cena consta de lacteo +frutas + ensalada
+cena(ListCena,TkCal):- fruta(F,Kf),lacteo(L,Kl),verdura(V,Kv),
+						TkCal is Kf+Kl+Kv, ListCena = [F,L,V].
 
 % Regla que muestra la combinación de desayuno+almuerzo que
 % esten en el rango de K mas/menos 10%
@@ -116,16 +104,16 @@ muestra_dietas(K):-desayuno(ListD,Dk),almuerzo(ListA,Ak),comida(ListC,Ck),merien
 					 Dk >= Tk*0.20,Dk =< Tk*0.30,
 					 Ak >= Tk*0.1,Ak =< Tk*0.15,
 					 Ck >= Tk*0.3,Ck =< Tk*0.4,
-					 Mk >= Tk*0.1,Ak =< Tk*0.15,
-					 Cenak >= Tk*0.2,Cenak =< Tk*0.25,
-                     count(N), N1 is N+1,retract(count(N)),assert(count(N1)),
+					 %Mk >= Tk*0.1,Ak =< Tk*0.15,
+					 %Cenak >= Tk*0.2,Cenak =< Tk*0.25,
+                     count(N),N1 is N+1,retract(count(N)),assert(count(N1)),
                      nl,format('MENÚ #~d (~d Kcal)',[N1,Tk]),
                      nl,write('Desayuno: '),write(ListD),
                      nl,write('Almuerzo: '),write(ListA),
 					 nl,write('Comida: '),write(ListC),
 					 nl,write('Merienda: '),write(ListM),
 					 nl,write('Cena: '),write(ListCena),
-                     nl,write('<<Press any key>>'),get_single_char(_),fail.
+                     nl,write('<<Press any key>>'),get_single_char(_),fail;true.
 
 % Ciclo principal
 main:-repeat,
